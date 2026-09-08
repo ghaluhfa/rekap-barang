@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>REKAP BARANG</title>
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#111111">
+
+<meta name="apple-mobile-web-app-capable"
+content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+content="black">
+
+<meta name="apple-mobile-web-app-title"
+content="Rekap Barang">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+padding:15px;
+font-family:Arial,sans-serif;
+background:#f2f2f2;
+color:#222;
+}
+
+h1{
+text-align:center;
+margin:10px 0 20px;
+}
+
+.box{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+}
+
+.quick{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+}
+
+select,
+input{
+padding:9px;
+font-size:16px;
+}
+
+.quick input{
+width:70px;
+text-align:center;
+}
+
+button{
+padding:9px 12px;
+border:0;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+margin:2px;
+}
+
+.plus{
+background:#22c55e;
+color:white;
+}
+
+.minus{
+background:#ef4444;
+color:white;
+}
+
+.undo{
+background:#f59e0b;
+color:white;
+}
+
+.reset{
+background:#dc2626;
+color:white;
+}
+
+.save{
+background:#2563eb;
+color:white;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,
+td{
+border:1px solid #ccc;
+padding:7px;
+text-align:center;
+}
+
+th{
+background:#222;
+color:white;
+}
+
+.qty{
+width:60px;
+text-align:center;
+}
+
+.total{
+font-weight:bold;
+background:#fff3cd;
+}
+
+.grand{
+background:#111;
+color:white;
+padding:18px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+border-radius:8px;
+margin-top:15px;
+}
+
+.check{
+margin-top:10px;
+}
+
+.status{
+padding:10px;
+border-radius:8px;
+background:#eee;
+font-size:14px;
+margin-top:10px;
+}
+
+.ok{
+background:#dcfce7;
+color:#166534;
+}
+
+.error{
+background:#fee2e2;
+color:#991b1b;
+}
+
+@media(max-width:600px){
+
+body{
+padding:8px;
+}
+
+table{
+font-size:12px;
+min-width:650px;
+}
+
+.box{
+padding:10px;
+}
+
+.table-wrap{
+overflow-x:auto;
+}
+
+button{
+padding:8px 10px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>📦 REKAP BARANG</h1>
+
+<div class="box">
+
+<h3>⚡ Input Cepat</h3>
+
+<div class="quick">
+
+<select id="berat">
+
+<option value="250">
+250 gram
+</option>
+
+<option value="500">
+500 gram
+</option>
+
+<option value="1000">
+1 Kg
+</option>
+
+</select>
+
+<select id="varian">
+
+<option value="03">03</option>
+
+<option value="08">08</option>
+
+<option value="B">B</option>
+
+<option value="DF">DF</option>
+
+</select>
+
+<input
+id="jumlah"
+type="number"
+value="1"
+min="1"
+>
+
+<button
+class="plus"
+onclick="tambahCepat()"
+>
++ TAMBAH
+</button>
+
+</div>
+
+<div
+id="status"
+class="status"
+>
+Menghubungkan ke database...
+</div>
+
+</div>
+
+<div class="box">
+
+<h3>📋 Rekap Barang</h3>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>BERAT</th>
+
+<th>03</th>
+
+<th>08</th>
+
+<th>B</th>
+
+<th>DF</th>
+
+<th>TOTAL</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td><b>250 gram</b></td>
+
+<td>
+<button
+class="minus"
+onclick="ubah('250','03',-1)"
+>−</button>
+
+<input
+class="qty"
+id="250-03"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('250','03',this.value)"
+>
+
+<button
+class="plus"
+onclick="ubah('250','03',1)"
+>+</button>
+</td>
+
+<td>
+<button
+class="minus"
+onclick="ubah('250','08',-1)"
+>−</button>
+
+<input
+class="qty"
+id="250-08"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('250','08',this.value)"
+>
+
+<button
+class="plus"
+onclick="ubah('250','08',1)"
+>+</button>
+</td>
+
+<td>
+<button
+class="minus"
+onclick="ubah('250','B',-1)"
+>−</button>
+
+<input
+class="qty"
+id="250-B"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('250','B',this.value)"
+>
+
+<button
+class="plus"
+onclick="ubah('250','B',1)"
+>+</button>
+</td>
+
+<td>
+<button
+class="minus"
+onclick="ubah('250','DF',-1)"
+>−</button>
+
+<input
+class="qty"
+id="250-DF"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('250','DF',this.value)"
+>
+
+<button
+class="plus"
+onclick="ubah('250','DF',1)"
+>+</button>
+</td>
+
+<td
+class="total"
+id="total-250"
+>
+0
+</td>
+
+</tr>
+
+<tr>
+
+<td><b>500 gram</b></td>
+
+<td>
+<button class="minus"
+onclick="ubah('500','03',-1)"
+>−</button>
+
+<input
+class="qty"
+id="500-03"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('500','03',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('500','03',1)"
+>+</button>
+</td>
+
+<td>
+<button class="minus"
+onclick="ubah('500','08',-1)"
+>−</button>
+
+<input
+class="qty"
+id="500-08"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('500','08',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('500','08',1)"
+>+</button>
+</td>
+
+<td>
+<button class="minus"
+onclick="ubah('500','B',-1)"
+>−</button>
+
+<input
+class="qty"
+id="500-B"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('500','B',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('500','B',1)"
+>+</button>
+</td>
+
+<td>
+<button class="minus"
+onclick="ubah('500','DF',-1)"
+>−</button>
+
+<input
+class="qty"
+id="500-DF"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('500','DF',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('500','DF',1)"
+>+</button>
+</td>
+
+<td
+class="total"
+id="total-500"
+>
+0
+</td>
+
+</tr>
+
+<tr>
+
+<td><b>1 Kg</b></td>
+
+<td>
+<button class="minus"
+onclick="ubah('1000','03',-1)"
+>−</button>
+
+<input
+class="qty"
+id="1000-03"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('1000','03',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('1000','03',1)"
+>+</button>
+</td>
+
+<td>
+<button class="minus"
+onclick="ubah('1000','08',-1)"
+>−</button>
+
+<input
+class="qty"
+id="1000-08"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('1000','08',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('1000','08',1)"
+>+</button>
+</td>
+
+<td>
+<button class="minus"
+onclick="ubah('1000','B',-1)"
+>−</button>
+
+<input
+class="qty"
+id="1000-B"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('1000','B',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('1000','B',1)"
+>+</button>
+</td>
+
+<td>
+<button class="minus"
+onclick="ubah('1000','DF',-1)"
+>−</button>
+
+<input
+class="qty"
+id="1000-DF"
+type="number"
+min="0"
+value="0"
+onchange="setJumlah('1000','DF',this.value)"
+>
+
+<button class="plus"
+onclick="ubah('1000','DF',1)"
+>+</button>
+</td>
+
+<td
+class="total"
+id="total-1000"
+>
+0
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+<div class="box">
+
+<h3>☑️ Checklist</h3>
+
+<div class="check">
+
+<label>
+<input type="checkbox" id="check250"
+onchange="ubahChecklist('250',this.checked)">
+250 gram selesai
+</label>
+
+</div>
+
+<br>
+
+<div class="check">
+
+<label>
+<input type="checkbox" id="check500"
+onchange="ubahChecklist('500',this.checked)">
+500 gram selesai
+</label>
+
+</div>
+
+<br>
+
+<div class="check">
+
+<label>
+<input type="checkbox" id="check1000"
+onchange="ubahChecklist('1000',this.checked)">
+1 Kg selesai
+</label>
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<button
+class="undo"
+onclick="undo()"
+>
+↩ UNDO TERAKHIR
+</button>
+
+<button
+class="reset"
+onclick="resetData()"
+>
+🗑 RESET SEMUA
+</button>
+
+</div>
+
+
+<div class="grand">
+
+TOTAL KESELURUHAN:
+
+<span id="grandTotal">
+0
+</span>
+
+PCS
+
+</div>
+
+
+<div class="box">
+
+<h3>🕐 Riwayat Input</h3>
+
+<div id="riwayat">
+Belum ada riwayat.
+</div>
+
+</div>
+<script>
+
+const SUPABASE_URL =
+"https://pnvrdlqpoaaebbilfzwg.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_fAzOTPpdQxxqNaFUZPOyfw__mD_3xsU";
+
+const db = supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+let history = [];
+
+const beratList = [
+"250",
+"500",
+"1000"
+];
+
+const varianList = [
+"03",
+"08",
+"B",
+"DF"
+];
+
+function getInput(berat,varian){
+
+return document.getElementById(
+berat+"-"+varian
+);
+
+}
+
+function getJumlah(berat,varian){
+
+let input =
+getInput(berat,varian);
+
+return parseInt(input.value) || 0;
+
+}
+
+function setStatus(text,ok=true){
+
+let el =
+document.getElementById("status");
+
+el.innerText = text;
+
+el.className =
+ok
+? "status ok"
+: "status error";
+
+}
+
+async function loadData(){
+
+setStatus(
+"Mengambil data dari Supabase..."
+);
+
+const {data,error} =
+await db
+.from("rekap_barang")
+.select("*");
+
+if(error){
+
+setStatus(
+"Gagal mengambil data: "+
+error.message,
+false
+);
+
+return;
+
+}
+
+data.forEach(item=>{
+
+let input =
+getInput(
+String(item.berat),
+item.varian
+);
+
+if(input){
+
+input.value =
+item.jumlah || 0;
+
+}
+
+});
+
+await loadChecklist();
+
+hitung();
+
+setStatus(
+"✓ Terhubung ke Supabase"
+);
+
+}
+
+async function simpan(
+berat,
+varian,
+jumlah
+){
+
+const {error} =
+await db
+.from("rekap_barang")
+.update({
+jumlah: jumlah
+})
+.eq("berat",Number(berat))
+.eq("varian",varian);
+
+if(error){
+
+setStatus(
+"Gagal menyimpan: "+
+error.message,
+false
+);
+
+return false;
+
+}
+
+setStatus(
+"✓ Data tersimpan"
+);
+
+return true;
+
+}
+
+async function ubah(
+berat,
+varian,
+perubahan
+){
+
+let input =
+getInput(berat,varian);
+
+let lama =
+parseInt(input.value) || 0;
+
+let baru =
+Math.max(0,lama+perubahan);
+
+if(baru===lama){
+
+return;
+
+}
+
+input.value=baru;
+
+let berhasil =
+await simpan(
+berat,
+varian,
+baru
+);
+
+if(!berhasil){
+
+input.value=lama;
+
+return;
+
+}
+
+history.push({
+
+berat:berat,
+
+varian:varian,
+
+sebelum:lama,
+
+sesudah:baru
+
+});
+
+await db
+.from("riwayat_barang")
+.insert({
+  berat:Number(berat),
+  varian:varian,
+  perubahan:perubahan
+});
+
+
+hitung();
+
+tampilRiwayat();
+
+}
+
+async function setJumlah(
+berat,
+varian,
+nilai
+){
+
+let input =
+getInput(berat,varian);
+
+let lama =
+parseInt(input.dataset.lama);
+
+if(isNaN(lama)){
+
+lama =
+parseInt(input.value)||0;
+
+}
+
+let baru =
+Math.max(
+0,
+parseInt(nilai)||0
+);
+
+input.value=baru;
+
+if(baru===lama){
+
+hitung();
+
+return;
+
+}
+
+let berhasil =
+await simpan(
+berat,
+varian,
+baru
+);
+
+if(!berhasil){
+
+input.value=lama;
+
+return;
+
+}
+
+history.push({
+
+berat:berat,
+
+varian:varian,
+
+sebelum:lama,
+
+sesudah:baru
+
+});
+
+hitung();
+
+tampilRiwayat();
+
+}
+
+async function tambahCepat(){
+
+let berat =
+document.getElementById(
+"berat"
+).value;
+
+let varian =
+document.getElementById(
+"varian"
+).value;
+
+let jumlah =
+parseInt(
+document.getElementById(
+"jumlah"
+).value
+)||1;
+
+if(jumlah<1){
+
+alert(
+"Jumlah minimal 1"
+);
+
+return;
+
+}
+
+await ubah(
+berat,
+varian,
+jumlah
+);
+
+document.getElementById(
+"jumlah"
+).value=1;
+
+}
+
+async function undo(){
+
+if(history.length===0){
+
+alert(
+"Belum ada input yang bisa di-undo."
+);
+
+return;
+
+}
+
+let terakhir =
+history.pop();
+
+let berhasil =
+await simpan(
+terakhir.berat,
+terakhir.varian,
+terakhir.sebelum
+);
+
+if(!berhasil){
+
+history.push(terakhir);
+
+return;
+
+}
+
+let input =
+getInput(
+terakhir.berat,
+terakhir.varian
+);
+
+input.value =
+terakhir.sebelum;
+
+hitung();
+
+tampilRiwayat();
+
+setStatus(
+"✓ Input terakhir dibatalkan"
+);
+
+}
+
+async function resetData(){
+
+let yakin =
+confirm(
+"Yakin mau menghapus SEMUA data?"
+);
+
+if(!yakin){
+
+return;
+
+}
+
+for(let berat of beratList){
+
+for(let varian of varianList){
+
+const {error} =
+await db
+.from("rekap_barang")
+.update({
+jumlah:0
+})
+.eq("berat",Number(berat))
+.eq("varian",varian);
+
+if(error){
+
+setStatus(
+"Gagal reset: "+
+error.message,
+false
+);
+
+return;
+
+}
+
+}
+
+}
+
+history=[];
+
+beratList.forEach(berat=>{
+
+varianList.forEach(varian=>{
+
+let input =
+getInput(berat,varian);
+
+input.value=0;
+
+});
+
+});
+
+hitung();
+
+tampilRiwayat();
+
+setStatus(
+"✓ Semua data sudah di-reset"
+);
+
+}
+
+function hitung(){
+
+let grand=0;
+
+beratList.forEach(berat=>{
+
+let total=0;
+
+varianList.forEach(varian=>{
+
+total +=
+getJumlah(
+berat,
+varian
+);
+
+});
+
+document.getElementById(
+"total-"+berat
+).innerText=total;
+
+grand += total;
+
+});
+
+document.getElementById(
+"grandTotal"
+).innerText=grand;
+
+}
+
+async function loadChecklist(){
+
+const {data,error} =
+await db
+.from("checklist_barang")
+.select("*")
+.eq("id",1)
+.single();
+
+if(error){
+
+setStatus(
+"Checklist gagal dimuat: "+
+error.message,
+false
+);
+
+return;
+
+}
+
+document.getElementById(
+"check250"
+).checked =
+data.selesai_250;
+
+document.getElementById(
+"check500"
+).checked =
+data.selesai_500;
+
+document.getElementById(
+"check1000"
+).checked =
+data.selesai_1000;
+
+}
+
+async function ubahChecklist(
+berat,
+selesai
+){
+
+let kolom;
+
+if(berat==="250"){
+
+kolom="selesai_250";
+
+}
+
+if(berat==="500"){
+
+kolom="selesai_500";
+
+}
+
+if(berat==="1000"){
+
+kolom="selesai_1000";
+
+}
+
+let update={};
+
+update[kolom]=selesai;
+
+const {error} =
+await db
+.from("checklist_barang")
+.update(update)
+.eq("id",1);
+
+if(error){
+
+setStatus(
+"Gagal menyimpan checklist: "+
+error.message,
+false
+);
+
+return;
+
+}
+
+setStatus(
+"✓ Checklist tersimpan"
+);
+
+}
+
+function tampilRiwayat(){
+
+let el =
+document.getElementById(
+"riwayat"
+);
+
+if(history.length===0){
+
+el.innerText =
+"Belum ada riwayat.";
+
+return;
+
+}
+
+let terakhir =
+[...history]
+.reverse()
+.slice(0,20);
+
+el.innerHTML =
+terakhir.map((x,i)=>{
+
+let nama;
+
+if(x.berat==="250"){
+
+nama="250 gram";
+
+}
+
+else if(x.berat==="500"){
+
+nama="500 gram";
+
+}
+
+else{
+
+nama="1 Kg";
+
+}
+
+return `
+<div style="
+padding:8px 0;
+border-bottom:1px solid #ddd;
+">
+${nama} - ${x.varian}
+: ${x.sebelum} → ${x.sesudah}
+</div>
+`;
+
+}).join("");
+
+}
+
+["250","500","1000"].forEach(berat=>{
+
+["03","08","B","DF"].forEach(varian=>{
+
+let input =
+getInput(berat,varian);
+
+if(input){
+
+input.addEventListener(
+"focus",
+function(){
+
+this.dataset.lama =
+this.value;
+
+}
+);
+
+}
+
+});
+
+});
+
+loadData();
+
+</script>
+
+</body>
+</html>
+
+db
+.channel("rekap-realtime")
+.on(
+  "postgres_changes",
+  {
+    event: "*",
+    schema: "public",
+    table: "rekap_barang"
+  },
+  function(payload){
+
+    console.log(
+      "Perubahan database:",
+      payload
+    );
+
+    loadData();
+
+  }
+)
+.subscribe();
+
+</script>
+<script>
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener("load", () => {
+
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => {
+        console.log("PWA aktif");
+      })
+      .catch(error => {
+        console.log(
+          "PWA gagal:",
+          error
+        );
+      });
+
+  });
+
+}
+
+</script>
+
+</body>
+</html>
